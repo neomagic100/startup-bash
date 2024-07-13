@@ -47,7 +47,8 @@ installApt () {
 }
 
 enableSSH () {
-	systemctl enable ssh 2>&1 3>&1 1>log.txt 2>/dev/null
+	editConf
+
 	if ! [ -f /etc/ssh/sshd_config ]; then
 		touch /etc/sysctl.d/99-sysctl.conf
 	fi
@@ -59,6 +60,7 @@ enableSSH () {
 		systemctl restart sshd
 	fi
 
+	systemctl enable ssh 2>&1 3>&1 1>log.txt 2>/dev/null
 }
 
 runMainMenu () {
@@ -66,7 +68,6 @@ runMainMenu () {
 		"Yes" "Run all" \
 		"No" "Skip all" \
 		"Some" "Select which scripts" 3>&1 1>&2 2>&3)
-	clear
 	echo "$choice"
 }
 
@@ -82,6 +83,8 @@ runScripts() {
 	# Input
 	if [ $# -gt 0 ]; then
 		if [[ "$1" == "ALL" ]]; then
+			echo "Installing all scripts (Press CTRL+C to cancel)..."
+			sleep 3
 			installApt
 			enableSSH
 		else
@@ -116,6 +119,7 @@ main () {
 	fi
 
 	clear
+
 	echo "Completed scripts..."
 	echo
 }
