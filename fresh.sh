@@ -39,11 +39,33 @@ editConf () {
 }
 
 installApt () {
-	apt install -y git ssh openssh-server procps 2>&1 1>log.txt 2>/dev/null
+	apt install -y git ssh openssh-server procps adduser useradd openssl 2>&1 1>log.txt 2>/dev/null
 	if [[ "$USER" != "None" ]] && [[ "$EMAIL" != "None" ]]; then
 		git config --global user.name "$USER"
 		git config --global user.email "$EMAIL"
 	fi
+}
+
+createUser () {
+	NAME=$(whiptail --title "Create User" --inputbox "Enter Username" 8 60 3>&1 1>&2 2>&3)
+	PASS="dummy"
+	CONFIRM_PASS="dummy1"
+	ATTEMPTS=0
+
+	while [[ "$PASS" != "$CONFIRM_PASS" ]]; do
+		PROMPT="Enter Password"
+		if [ $ATTEMPTS -gt 4 ]; then
+			exit 5
+		elif [ $ATTEMPTS -gt 0 ]; then
+			PROMPT="$PROMPT: ** Passwords did not match **"
+		fi
+		PASS=$(whiptail --title "Create User" --passwordbox "$PROMPT" 8 60 3>&1 1>&2 2>&3)
+		CONFIRM_PASS=$(whiptail --title "Create User" --passwordbox "Confirm Password" 8 60 3>&1 1>&2 2>&3)
+		ATTEMPTS=$(("$ATTEMPTS"+1))
+	done
+
+	mkdir "/home/$NAME"
+	useradd -d "/home/$NAME" -p "$(openssl passwd -6 "$PASS")" "$NAME"
 }
 
 enableSSH () {
@@ -76,7 +98,7 @@ runChoiceMenu() {
   		"$OP_APT" "$TEXT_APT" ON \
   		"$OP_SSH" "$TEXT_SSH" ON \
   		"$OP_USER" "$TEXT_USER" OFF 3>&1 1>&2 2>&3)
-	echo $choices
+	echo "$choices"
 }
 
 runScripts() {
@@ -87,6 +109,7 @@ runScripts() {
 			sleep 3
 			installApt
 			enableSSH
+			createUser
 		else
 			for op in "$@"; do
 				if [[ "$op" == "$OP_APT" ]]; then
@@ -94,20 +117,23 @@ runScripts() {
 				elif [[ "$op" == "$OP_SSH" ]]; then
 					enableSSH
 				elif [[ "$op" == "$OP_USER" ]]; then
+					createUser
+				elif [[ "$op" == "$OP_USER" ]]; then
 					break
 				fi		
 			done
-		fi
-	else
-		echo "Done"
+		fi		
 	fi
+
+	echo "Done"
 }
 
 main () {
-	# Option to opt out of running
 	apt update 2>&1 1>log.txt 2>/dev/null
 	apt install -y whiptail 2>/dev/null
+
 	runOption=$(runMainMenu)
+
 	if [[ "$runOption" == "$RUN_ALL" ]]; then
 		runScripts "ALL"
 	elif [[ "$runOption" == "$RUN_NONE" ]]; then
