@@ -7,12 +7,17 @@ RUN_SOME="Some"
 TEXT_APT="Install Apt Packages"
 TEXT_USER="Create New User"
 TEXT_SSH="Setup SSH"
+TEXT_ALIASES="Add COmmon Aliases"
+
 OP_APT="1"
 OP_USER="2"
 OP_SSH="3"
+OP_ALIASES="4"
 
 USER="None"
 EMAIL="None"
+
+LOCAL_DIR=$(pwd -P)
 
 if [ -f "user.txt" ]; then
 	USER=$(sed -n 's/^Name=\(.*\)/\1/p' < "user.txt")
@@ -85,6 +90,39 @@ enableSSH () {
 	systemctl enable ssh 2>&1 3>&1 1>log.txt 2>/dev/null
 }
 
+makeAliases () {
+	if ! [ -f /root/.bash_aliases ]; then
+		cp aliases.sh /root/.bash_aliases
+		cd /root || return
+
+		echo \
+		"if [ -f ~/.bash_aliases ]; then
+    		. ~/.bash_aliases
+		fi" >> .bashrc
+
+		source .bashrc
+		
+		cd "$LOCAL_DIR" || return
+	else 
+		# ELSE CLAUSE UNTESTED
+		
+		aliasFile="$LOCAL_DIR/.bash_aliases"
+		index=0
+		arr=()
+		while read -r line; do
+			arr+=("$line")
+			index=$(($index+1))
+		done < "$aliasFile"
+
+		for line in "${arr[@]}"; do
+			aliasExists=$(grep "$line" < .bash_aliases)
+			if [[ $aliasExists != " " ]]; then
+				echo "$line" >> .bash_aliases
+			fi
+		done
+	fi
+}
+
 runMainMenu () {
 	choice=$(whiptail --title "Linux Bash Setup" --menu "Run Preselected Scripts?" 12 50 3 \
 		"Yes" "Run all" \
@@ -95,6 +133,7 @@ runMainMenu () {
 
 runChoiceMenu() {
 	choices=$(whiptail --separate-output --checklist "Choose options" 10 35 5 \
+		"$OP_ALIASES" "$TEXT_ALIASES" ON \
   		"$OP_APT" "$TEXT_APT" ON \
   		"$OP_SSH" "$TEXT_SSH" ON \
   		"$OP_USER" "$TEXT_USER" OFF 3>&1 1>&2 2>&3)
@@ -114,13 +153,17 @@ runScripts() {
 			for op in "$@"; do
 				if [[ "$op" == "$OP_APT" ]]; then
 					installApt
-				elif [[ "$op" == "$OP_SSH" ]]; then
+				fi
+			done
+
+			for op in "$@"; do
+				if [[ "$op" == "$OP_SSH" ]]; then
 					enableSSH
 				elif [[ "$op" == "$OP_USER" ]]; then
 					createUser
-				elif [[ "$op" == "$OP_USER" ]]; then
-					break
-				fi		
+				elif [[ "$op" == "$OP_ALIASES" ]]; then
+					makeAliases
+				fi
 			done
 		fi		
 	fi
