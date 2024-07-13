@@ -135,8 +135,8 @@ runChoiceMenu() {
 	choices=$(whiptail --separate-output --checklist "Choose options" 10 35 5 \
   		"$OP_APT" "$TEXT_APT" ON \
   		"$OP_SSH" "$TEXT_SSH" ON \
-		"$OP_USER" "$TEXT_USER" OFF
-  		"$OP_ALIASES" "$TEXT_ALIASES" ON \ 3>&1 1>&2 2>&3)
+		"$OP_USER" "$TEXT_USER" OFF \
+  		"$OP_ALIASES" "$TEXT_ALIASES" ON 3>&1 1>&2 2>&3)
 	echo "$choices"
 }
 
