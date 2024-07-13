@@ -149,6 +149,7 @@ runScripts() {
 			installApt
 			enableSSH
 			createUser
+			makeAliases
 		else
 			for op in "$@"; do
 				if [[ "$op" == "$OP_APT" ]]; then
