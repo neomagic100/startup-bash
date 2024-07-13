@@ -7,7 +7,7 @@ RUN_SOME="Some"
 TEXT_APT="Install Apt Packages"
 TEXT_USER="Create New User"
 TEXT_SSH="Setup SSH"
-TEXT_ALIASES="Add COmmon Aliases"
+TEXT_ALIASES="Add Common Aliases"
 
 OP_APT="1"
 OP_USER="2"
@@ -105,7 +105,7 @@ makeAliases () {
 		cd "$LOCAL_DIR" || return
 	else 
 		# ELSE CLAUSE UNTESTED
-		
+
 		aliasFile="$LOCAL_DIR/.bash_aliases"
 		index=0
 		arr=()
