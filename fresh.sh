@@ -134,6 +134,4 @@ main () {
 	echo
 }
 
-echo "Starting" >> log.txt
-echo "Starting." 
 main
