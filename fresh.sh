@@ -20,31 +20,6 @@ export USER="None"
 export EMAIL="None"
 PROFILE="root"
 HOME_PATH="/root"
-
-userList=$(echo users)
-
-function getUser() {
-	profile=$(whiptail --title "Linux Bash Setup" --inputbox "Username" 8 60 3>&1 1>&2 2>&3)
-	exitStatus=$?
-	[[ "$exitStatus" == 1 ]] && exit 1;
-	if [[ "$exitStatus" == "" ]]; then
-		currUser=$(whoami)
-		if [[ "$currUser" != "root" ]]; then
-			profile="$currUser"
-		fi
-	fi
-	echo "$profile"
-}
-
-for user in "${userList[@]}"; do
-	if [[ "$user" != "root" ]]; then
-		PROFILE=$(getUser)
-	fi
-done
-
-if [[ $PROFILE != "root" ]]; then
-	HOME_PATH="/home/$PROFILE"
-fi
 export LOCAL_DIR=$(pwd -P)
 
 source "$HOME_PATH/startup-bash/scripts/createUser.sh"
