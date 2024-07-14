@@ -72,16 +72,16 @@ runScripts() {
 				if [[ "$op" == "$OP_APT" ]]; then
 					installApt
 				elif [[ "$op" == "$OP_USER" ]]; then
-					source scripts/createUser.sh
+					source /root/scripts/createUser.sh
 					createUser
 				elif [[ "$op" == "$OP_SSH" ]]; then
-					source scripts/networking.sh
+					source /root/scripts/networking.sh
 					enableSSH
 				elif [[ "$op" == "$OP_ALIASES" ]]; then
-					source scripts/aliases.sh
+					source /root/scripts/aliases.sh
 					makeAliases
 				elif [[ "$op" == "$OP_FORWARD_IP" ]]; then
-					source scripts/networking.sh
+					source /root/scripts/networking.sh
 					editConf
 				fi
 			done
