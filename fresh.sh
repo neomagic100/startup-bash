@@ -22,6 +22,8 @@ LOCAL_DIR=$(pwd -P)
 if [ -f "user.txt" ]; then
 	USER=$(sed -n 's/^Name=\(.*\)/\1/p' < "user.txt")
 	EMAIL=$(sed -n 's/^Email=\(.*\)/\1/p' < "user.txt")
+	echo
+	echo "Running script for $USER ($EMAIL)" >> log.txt
 fi
 
 editConf () {
@@ -41,6 +43,7 @@ editConf () {
 	fi
 	
 	sudo sysctl -p
+	echo "Forwarding IPs" >> log.txt
 }
 
 installApt () {
@@ -49,6 +52,8 @@ installApt () {
 		git config --global user.name "$USER"
 		git config --global user.email "$EMAIL"
 	fi
+
+	echo "Installed git ssh openssh-server procps adduser useradd openssl" >> log.txt
 }
 
 createUser () {
@@ -71,6 +76,7 @@ createUser () {
 
 	mkdir "/home/$NAME"
 	useradd -d "/home/$NAME" -p "$(openssl passwd -6 "$PASS")" "$NAME"
+	echo "Added user $NAME" >> log.txt
 }
 
 enableSSH () {
@@ -84,6 +90,7 @@ enableSSH () {
 	fi
 
 	systemctl enable ssh 2>&1 3>&1 1>log.txt 2>/dev/null
+	echo "Enabled SSH" >> log.txt
 }
 
 makeAliases () {
@@ -115,7 +122,7 @@ makeAliases () {
 			fi
 		done
 	fi
-
+	echo "Added bash aliases" >> log.txt
 	source /root/.bashrc
 }
 
@@ -186,8 +193,11 @@ main () {
 
 	clear
 
+	echo "Completed scripts" >> log.txt
 	echo "Completed scripts..."
 	echo
 }
 
+echo "Starting" >> log.txt
+echo "Starting." 
 main
