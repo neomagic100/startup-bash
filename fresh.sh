@@ -95,8 +95,6 @@ makeAliases () {
 		"if [ -f ~/.bash_aliases ]; then
     		. ~/.bash_aliases
 		fi" >> .bashrc
-
-		source .bashrc
 		
 		cd "$LOCAL_DIR" || return
 	else 
@@ -117,6 +115,8 @@ makeAliases () {
 			fi
 		done
 	fi
+
+	source /root/.bashrc
 }
 
 runMainMenu () {
