@@ -45,7 +45,6 @@ installApt () {
 }
 
 runMainMenu () {
-	timeout 10s ba
 	choice=$(whiptail --title "Linux Bash Setup" --menu "Run Preselected Scripts?" 12 50 3 \
 		"Yes" "Run all" \
 		"No" "Skip all" \
@@ -98,26 +97,11 @@ runScripts() {
 	echo "Done"
 }
 
-waitForKeypress() {
-    echo "Press any key within 10 seconds to run the input prompt..."
-    read -n 1 -t 10 keypress
-    if [ $? -eq 0 ]; then
-        echo 0
-    else
-        echo 1
-    fi
-}
-
 main () {
-	useInput=$(waitForKeypress)
 	apt update 2>&1 1>log.txt 2>/dev/null
 	apt install -y whiptail 2>/dev/null
-
-	if [[ "$useInput" == 0 ]]; then
-		runOption=$(runMainMenu)
-	else
-		runOption="$RUN_ALL"
-	fi
+	
+	runOption=$(runMainMenu)
 
 	if [[ "$runOption" == "$RUN_ALL" ]]; then
 		runScripts "ALL"
@@ -134,4 +118,14 @@ main () {
 	echo
 }
 
-main
+echo
+echo "Press any key within 10 seconds to run the input menu..."
+read -n 1 -t 10 keypress
+if [ $? -eq 0 ]; then
+	main
+else
+	runScripts "ALL"
+	echo "Completed scripts" >> log.txt
+	echo "Completed scripts..."
+	echo
+fi
