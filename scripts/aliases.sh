@@ -1,20 +1,20 @@
 #!/bin/bash
 
 makeAliases () {
-	if ! [ -f /root/.bash_aliases ]; then
+	if ! [ -f $HOME_PATH/.bash_aliases ]; then
 		cp aliases.sh /root/.bash_aliases
-		cd /root || return
+		cd $HOME_PATH || return
 
 		echo \
-		"if [ -f /root/.bash_aliases ]; then
-    		. root/.bash_aliases
+		"if [ -f $HOME_PATH/.bash_aliases ]; then
+    		. $HOME_PATH/.bash_aliases
 		fi" >> .bashrc
 		
 		cd "$LOCAL_DIR" || return
 	else 
 		# ELSE CLAUSE UNTESTED
 
-		aliasFile="/root/.bash_aliases"
+		aliasFile="$HOME_PATH/.bash_aliases"
 		index=0
 		arr=()
 		while read -r line; do
@@ -30,5 +30,5 @@ makeAliases () {
 		done
 	fi
 	echo "Added bash aliases" >> log.txt
-	source /root/.bashrc
+	source $HOME_PATH/.bashrc
 }

@@ -18,8 +18,39 @@ OP_FORWARD_IP="5"
 
 export USER="None"
 export EMAIL="None"
+PROFILE="root"
+HOME_PATH="/root"
 
+userList=$(echo users)
+
+function getUser() {
+	profile=$(whiptail --title "Linux Bash Setup" --inputbox "Username" 8 60 3>&1 1>&2 2>&3)
+	exitStatus=$?
+	[[ "$exitStatus" == 1 ]] && exit 1;
+	if [[ "$exitStatus" == "" ]]; then
+		currUser=$(whoami)
+		if [[ "$currUser" != "root" ]]; then
+			profile="$currUser"
+		fi
+	fi
+	echo "$profile"
+}
+
+for user in "${userList[@]}"; do
+	if [[ "$user" != "root" ]]; then
+		PROFILE=$(getUser)
+	fi
+done
+
+if [[ $PROFILE != "root" ]]; then
+	HOME_PATH="/home/$PROFILE"
+fi
 export LOCAL_DIR=$(pwd -P)
+
+source "$HOME_PATH/startup-bash/scripts/createUser.sh"
+source "$HOME_PATH/startup-bash/scripts/networking.sh"
+source "$HOME_PATH/startup-bash/scripts/aliases.sh"
+source "$HOME_PATH/startup-bash/scripts/networking.sh"
 
 if [ -f "user.txt" ]; then
 	USER=$(sed -n 's/^Name=\(.*\)/\1/p' < "user.txt")
@@ -47,7 +78,7 @@ runMainMenu () {
 }
 
 runChoiceMenu() {
-	choices=$(whiptail --separate-output --checklist "Choose options" 12 50 6 \
+	choices=$(whiptail --separate-output --title "Linux Bash Setup" --checklist "Choose options" 12 50 6 \
   		"$OP_APT" "$TEXT_APT" ON \
   		"$OP_SSH" "$TEXT_SSH" ON \
 		"$OP_USER" "$TEXT_USER" OFF \
@@ -72,16 +103,16 @@ runScripts() {
 				if [[ "$op" == "$OP_APT" ]]; then
 					installApt
 				elif [[ "$op" == "$OP_USER" ]]; then
-					source /root/scripts/createUser.sh
+					
 					createUser
 				elif [[ "$op" == "$OP_SSH" ]]; then
-					source /root/scripts/networking.sh
+					
 					enableSSH
 				elif [[ "$op" == "$OP_ALIASES" ]]; then
-					source /root/scripts/aliases.sh
+					
 					makeAliases
 				elif [[ "$op" == "$OP_FORWARD_IP" ]]; then
-					source /root/scripts/networking.sh
+					
 					editConf
 				fi
 			done
