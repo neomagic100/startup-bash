@@ -8,11 +8,13 @@ TEXT_APT="Install Apt Packages"
 TEXT_USER="Create New User"
 TEXT_SSH="Setup SSH"
 TEXT_ALIASES="Add Common Aliases"
+TEXT_FORWARD_IP="Forward IP"
 
 OP_APT="1"
 OP_USER="2"
 OP_SSH="3"
 OP_ALIASES="4"
+OP_FORWARD_IP="5"
 
 USER="None"
 EMAIL="None"
@@ -80,8 +82,6 @@ createUser () {
 }
 
 enableSSH () {
-	editConf
-
 	LOGIN_PERMITTED=$(egrep ^"PermitRootLogin yes" < /etc/ssh/sshd_config)
 	
 	if [[ $LOGIN_PERMITTED == "" ]]; then
@@ -135,11 +135,12 @@ runMainMenu () {
 }
 
 runChoiceMenu() {
-	choices=$(whiptail --separate-output --checklist "Choose options" 10 35 5 \
+	choices=$(whiptail --separate-output --checklist "Choose options" 12 50 6 \
   		"$OP_APT" "$TEXT_APT" ON \
   		"$OP_SSH" "$TEXT_SSH" ON \
 		"$OP_USER" "$TEXT_USER" OFF \
-  		"$OP_ALIASES" "$TEXT_ALIASES" ON 3>&1 1>&2 2>&3)
+  		"$OP_ALIASES" "$TEXT_ALIASES" ON \
+		"$OP_FORWARD_IP" "$TEXT_FORWARD_IP" OFF 3>&1 1>&2 2>&3)
 	echo "$choices"
 }
 
@@ -153,6 +154,7 @@ runScripts() {
 			enableSSH
 			createUser
 			makeAliases
+			editConf
 		else
 			for op in "$@"; do
 				if [[ "$op" == "$OP_APT" ]]; then
@@ -161,12 +163,14 @@ runScripts() {
 			done
 
 			for op in "$@"; do
-				if [[ "$op" == "$OP_SSH" ]]; then
-					enableSSH
-				elif [[ "$op" == "$OP_USER" ]]; then
+				if [[ "$op" == "$OP_USER" ]]; then
 					createUser
+				elif [[ "$op" == "$OP_SSH" ]]; then
+					enableSSH
 				elif [[ "$op" == "$OP_ALIASES" ]]; then
 					makeAliases
+				elif [[ "$op" == "$OP_FORWARD_IP" ]]; then
+					editConf
 				fi
 			done
 		fi		
