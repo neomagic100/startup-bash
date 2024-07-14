@@ -109,7 +109,7 @@ waitForKeypress() {
 }
 
 main () {
-	useInput=$(waitForKeyPress)
+	useInput=$(waitForKeypress)
 	apt update 2>&1 1>log.txt 2>/dev/null
 	apt install -y whiptail 2>/dev/null
 
