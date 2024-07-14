@@ -76,10 +76,6 @@ createUser () {
 enableSSH () {
 	editConf
 
-	if ! [ -f /etc/ssh/sshd_config ]; then
-		touch /etc/sysctl.d/99-sysctl.conf
-	fi
-
 	LOGIN_PERMITTED=$(egrep ^"PermitRootLogin yes" < /etc/ssh/sshd_config)
 	
 	if [[ $LOGIN_PERMITTED == "" ]]; then
