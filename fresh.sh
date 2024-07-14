@@ -107,7 +107,7 @@ makeAliases () {
 	else 
 		# ELSE CLAUSE UNTESTED
 
-		aliasFile="$LOCAL_DIR/.bash_aliases"
+		aliasFile="/root/.bash_aliases"
 		index=0
 		arr=()
 		while read -r line; do
