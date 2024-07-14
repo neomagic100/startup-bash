@@ -99,8 +99,8 @@ makeAliases () {
 		cd /root || return
 
 		echo \
-		"if [ -f ~/.bash_aliases ]; then
-    		. ~/.bash_aliases
+		"if [ -f /root/.bash_aliases ]; then
+    		. root/.bash_aliases
 		fi" >> .bashrc
 		
 		cd "$LOCAL_DIR" || return
@@ -141,7 +141,7 @@ runChoiceMenu() {
 		"$OP_USER" "$TEXT_USER" OFF \
   		"$OP_ALIASES" "$TEXT_ALIASES" ON \
 		"$OP_FORWARD_IP" "$TEXT_FORWARD_IP" OFF 3>&1 1>&2 2>&3)
-	echo "$choices"
+	echo $choices
 }
 
 runScripts() {
@@ -159,11 +159,7 @@ runScripts() {
 			for op in "$@"; do
 				if [[ "$op" == "$OP_APT" ]]; then
 					installApt
-				fi
-			done
-
-			for op in "$@"; do
-				if [[ "$op" == "$OP_USER" ]]; then
+				elif [[ "$op" == "$OP_USER" ]]; then
 					createUser
 				elif [[ "$op" == "$OP_SSH" ]]; then
 					enableSSH
@@ -192,10 +188,8 @@ main () {
 		echo
 	elif [[ "$runOption" == "$RUN_SOME" ]]; then
 		choices=$(runChoiceMenu)
-		runScripts "$choices"
+		runScripts $choices
 	fi
-
-	clear
 
 	echo "Completed scripts" >> log.txt
 	echo "Completed scripts..."
