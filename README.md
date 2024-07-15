@@ -35,6 +35,16 @@ Before you begin, ensure you have met the following requirements:
    ```bash
    cd startup-bash
    ```
+3. Copy the sample-user.txt file and name it user.txt. Edit it with your name and e-mail:
+```bash
+   cp sample-user.txt user.txt
+```
+```bash
+   nano user.txt
+
+   Name=<Your Name>
+   Email=<Your E-mail>
+```
 
 ### Usage
 
