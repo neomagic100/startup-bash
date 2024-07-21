@@ -1,19 +1,19 @@
 #!/bin/bash
+LOCAL_DIR=$(pwd -P)
 
 makeAliases () {
-	if ! [ -f $HOME_PATH/.bash_aliases ]; then
-		cp aliases.sh /root/.bash_aliases
+	if ! [ -f "$HOME_PATH/.bash_aliases" ]; then
+		cp aliases.sh "$HOME_PATH/.bash_aliases"
 		cd $HOME_PATH || return
 
 		echo \
 		"if [ -f $HOME_PATH/.bash_aliases ]; then
     		. $HOME_PATH/.bash_aliases
-		fi" >> .bashrc
+		fi" >> "$HOME_PATH/.bashrc"
 		
-		cd "$LOCAL_DIR" || return
 	else 
 		# ELSE CLAUSE UNTESTED
-
+		
 		aliasFile="$HOME_PATH/.bash_aliases"
 		index=0
 		arr=()
@@ -22,13 +22,15 @@ makeAliases () {
 			index=$(($index+1))
 		done < "$aliasFile"
 
+		cd "$HOME_PATH" || return
+
 		for line in "${arr[@]}"; do
-			aliasExists=$(grep "$line" < .bash_aliases)
-			if [[ $aliasExists != " " ]]; then
-				echo "$line" >> .bash_aliases
+			if ! grep -Fxq "$line" "$aliasFile"; then
+				echo "$line" >> "$HOME_PATH/.bash_aliases"
 			fi
 		done
 	fi
-	echo "Added bash aliases" >> log.txt
-	source $HOME_PATH/.bashrc
+
+	echo "Added bash aliases" >> "$LOCAL_DIR/log.txt"
+	cd "$LOCAL_DIR" || return
 }
